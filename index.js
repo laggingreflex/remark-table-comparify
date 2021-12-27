@@ -23,7 +23,7 @@ export default function tableComparify(opts) {
     const state = file.data.tableComparify = {};
     visit(tree, 'table', table => onTable({ table, file, state, opts }));
     if (!state.found) {
-      file.message(`Couldn't find a table`);
+      file.message(`Couldn't find a table (be sure to use remark-gfm before)`);
     } else if (!state.altered) {
       file.message(`Didn't alter any table`);
     } else {
