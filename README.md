@@ -1,0 +1,83 @@
+# remark-table-comparify
+
+Plugin for [Remark] to perform comparisons in a table.
+
+## Install
+
+```
+npm install remark-table-comparify
+```
+
+## Usage
+
+```js
+import { remark } from 'remark';
+import remarkGfm from 'remark-gfm';  /* Needs remark-gfm */
+import remarkTC from 'remark-table-comparify';
+
+const file = 'Todo.md';
+
+const remarked = await remark()
+    .use(remarkGfm) /* Be sure to use the remark-gfm plugin before */
+    .use(remarkTC, opts)
+    .process(input)
+
+if (remarked.data.tableComparify.altered) {
+  /* A table was found and altered */
+}
+```
+
+## API
+
+```js
+remarkTC(opts)
+```
+* **`opts`** `[object]` Options
+* **`opts.operations`** `[object]` Operations in the form of: `{ ['+']: (a, b) => a + b }`
+
+**`file.data.tableComparify`** is populated with:
+
+* **`found`** `[boolean]` If a table was found
+* **`altered`** `[boolean]` If a table was altered
+
+## Example
+
+Imagine you're a cute fuzzy bunny with an evil plan to take over the forest and establish your [BoingoSnax] empire.
+
+A simple Todo list won't do. You use something like the [Eisenhower Method] to fine-tune your plan by assigning Urgency/Importance points to each task.
+
+**This plugin can then help you calculate the score!**
+
+```md
+| Task                     | +Urgency:*10 | +Importance | +Significance | Effort | =Score |
+| :----------------------- | -----------: | ----------: | ------------: | -----: | -----: |
+| Take down Muffin Man     |           10 |          10 |             1 |      4 |    111 |
+| Ruin Red                 |            9 |           9 |             2 |      5 |    101 |
+| Act cute & fuzzy         |            8 |           8 |             3 |      1 |     91 |
+| Steal Recipe Book!!      |            7 |           7 |             4 |     10 |     81 |
+| Send Wolf on goose chase |            6 |           6 |             5 |      3 |     71 |
+| Pick up dry cleaning     |            5 |           5 |             6 |      2 |     61 |
+| Pay evil ski team        |            4 |           4 |             7 |      1 |     51 |
+| Pay gas bill             |            3 |           3 |             8 |      2 |     41 |
+| Call mom                 |            2 |           2 |             9 |      1 |     31 |
+| Finish lair              |            1 |           1 |            10 |     10 |     21 |
+```
+
+It looks for mathematical operation symbols: `+`, `-`, `*`, `/` prefixed in the header row of columns and uses them to calculate the final result.
+
+The final result is saved in the column with a `=` sign in its header.
+
+It also looks for modifiers in the header suffixed with a `:` to further modify the score.
+
+[![example]][example]
+
+Header | What it does
+--|--
+`+Importance` | **Adds** the value of cells of that column to the corresponding **result** column.
+`+Urgency:*10` | Adds 10 **times** the value of that column ... 〃.
+`=Score` | Sets the **result** column.
+
+[Remark]: https://remark.js.org
+[BoingoSnax]: https://hoodwinked.fandom.com/wiki/BoingoSnax
+[Eisenhower Method]: https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method
+[example]: example.gif

@@ -1,0 +1,14 @@
+{
+  "name": "remark-table-comparify",
+  "version": "0.0.0",
+  "description": "Remark plugin to perform comparisons in a table",
+  "main": "index.js",
+  "type": "module",
+  "repository": "laggingreflex/remark-table-comparify",
+  "dependencies": {
+    "unist-util-visit": "^4.1.0"
+  },
+  "peerDependencies": {
+    "remark-gfm": "^3.0.1"
+  }
+}
