@@ -1,6 +1,8 @@
 # remark-table-comparify
 
-Plugin for [Remark] to perform comparisons in a table.
+Plugin for [Remark] to perform comparisons in a table by assigning values and calculating scores.
+
+[![example]][example]
 
 ## Install
 
@@ -29,11 +31,31 @@ if (remarked.data.tableComparify.altered) {
 
 ## CLI
 
-Using [remark-cli]:
+* Install [Remark CLI], [Remark GFM], and this plugin globally:
 
-```sh
-remark . --use remark-gfm --use remark-table-comparify --output
-```
+    ```
+    npm i -g remark-cli remark-gfm remark-table-comparify
+    ```
+
+* Run:
+
+    ```sh
+    remark . --use remark-gfm --use remark-table-comparify --output
+    ```
+
+## VS Code
+
+**Doesn't work yet** because this plugin uses ESM but [VSCode/Electron doesn't][remark#846] (*yet*). Shall be fixed by [electron#21457]👀👍. Once resolved,
+
+* Install https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-remark
+* Install this plugin globally:
+    ```
+    npm i -g remark-table-comparify
+    ```
+* Configure `remark.format.plugins`
+    ```js
+    "remark.format.plugins": ["remark-table-comparify"]
+    ```
 
 ## API
 
@@ -86,8 +108,9 @@ Header | What it does
 `=Score` | Sets the **result** column.
 
 [Remark]: https://remark.js.org
-[remark-cli]: https://github.com/remarkjs/remark/tree/main/packages/remark-cli
+[Remark CLI]: https://github.com/remarkjs/remark/tree/main/packages/remark-cli
 [BoingoSnax]: https://hoodwinked.fandom.com/wiki/BoingoSnax
 [Eisenhower Method]: https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method
 [example]: example.gif
-
+[remark#846]: https://github.com/remarkjs/remark/discussions/846#discussioncomment-1300344
+[electron#21457]: https://github.com/electron/electron/issues/21457
