@@ -27,6 +27,14 @@ if (remarked.data.tableComparify.altered) {
 }
 ```
 
+## CLI
+
+Using [remark-cli]:
+
+```sh
+remark . --use remark-gfm --use remark-table-comparify --output
+```
+
 ## API
 
 ```js
@@ -78,6 +86,8 @@ Header | What it does
 `=Score` | Sets the **result** column.
 
 [Remark]: https://remark.js.org
+[remark-cli]: https://github.com/remarkjs/remark/tree/main/packages/remark-cli
 [BoingoSnax]: https://hoodwinked.fandom.com/wiki/BoingoSnax
 [Eisenhower Method]: https://en.wikipedia.org/wiki/Time_management#The_Eisenhower_Method
 [example]: example.gif
+
