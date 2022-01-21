@@ -68,6 +68,7 @@ export async function modify(input, opts) {
 function onTable({ node, file, state, opts }) {
   state && (state.found = true);
   const operations = opts?.operations || defaults.operations;
+  const resultSymbol = opts?.resultSymbol || defaults.resultSymbol;
   const operationSymbols = Object.keys(operations);
   const operationsQueue = operationSymbols.reduce((ops, op) => ({ ...ops, [op]: [] }), {});
   let resultColI;
@@ -81,13 +82,13 @@ function onTable({ node, file, state, opts }) {
       operationsQueue[meta.operation].push({ i, header, ...meta });
       hasAtleastOneOp = true;
     }
-    if (_.startsWith(header, '=')) {
-      if (typeof resultColI !== typeof undefined) file.message(`Multiple "=result" columns, picking last one`);
+    if (_.startsWith(header, resultSymbol)) {
+      if (typeof resultColI !== typeof undefined) file.message(`Multiple "${resultSymbol}result" columns, picking last one`);
       resultColI = i;
     }
   }
-  if (typeof resultColI === 'undefined') {
-    file.message(`Couldn't find "result" column — a column that starts with a '='`);
+  if (typeof resultColI === typeof undefined) {
+    file.message(`Couldn't find "result" column — a column that starts with a '${resultSymbol}'`);
     return;
   }
   if (!hasAtleastOneOp) {
@@ -151,6 +152,7 @@ function getMeta(string, opts) {
   const operationSymbols = Object.keys(operations);
   const min = opts?.min ?? -Infinity;
   const defaultSeparator = opts?.defaultSeparator || defaults.defaultSeparator;
+  const modifierSeparator = opts?.modifierSeparator || defaults.modifierSeparator;
 
   const meta = {};
 
@@ -160,8 +162,8 @@ function getMeta(string, opts) {
     }
   }
 
-  if (string.includes(':')) {
-    let [, modifierString] = string.split(':');
+  if (string.includes(modifierSeparator)) {
+    let [, modifierString] = string.split(modifierSeparator);
     const opRx = '\\' + operationSymbols.join('|\\');
     const regexpString = `(${opRx})([0-9]+|min)`;
     const regExp = new RegExp(regexpString, 'i');
