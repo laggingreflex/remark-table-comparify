@@ -64,6 +64,9 @@ remarkTC(opts)
 ```
 * **`opts`** `[object]` Options
 * **`opts.operations`** `[object]` Operations in the form of: `{ ['+']: (a, b) => a + b }`
+* **`opts.resultSymbol`** `[string='=']` Symbol used to identify results column. E.g.: `…| =result |…`
+* **`opts.modifierSeparator`** `[string=':']` Symbol used to identify modifiers. E.g.: `…| +col:*2 |…`
+* **`opts.defaultSeparator`** `[string='?']` Symbol used to identify default value. E.g.: `…| +col?1 |…`
 
 **`file.data.tableComparify`** is populated with:
 
@@ -78,7 +81,7 @@ A simple Todo list won't do. You use something like the [Eisenhower Method] to f
 
 **This plugin can then help you calculate the score!**
 
-```md
+```
 | Task                     | +Urgency:*10 | +Importance | +Significance | Effort | =Score |
 | :----------------------- | -----------: | ----------: | ------------: | -----: | -----: |
 | Take down Muffin Man     |           10 |          10 |             1 |      4 |    111 |
@@ -93,19 +96,22 @@ A simple Todo list won't do. You use something like the [Eisenhower Method] to f
 | Finish lair              |            1 |           1 |            10 |     10 |     21 |
 ```
 
-It looks for mathematical operation symbols: `+`, `-`, `*`, `/` prefixed in the header row of columns and uses them to calculate the final result.
+* **Mathematical operators**: It looks for mathematical **operation** symbols: **`+`**, **`-`**, **`*`**, **`/`** prefixed in the header row of columns and uses them to calculate the final result.
 
-The final result is saved in the column with a `=` sign in its header.
+* **Result**: The final **result** is saved in the column with a **`=`** sign in its header.
 
-It also looks for modifiers in the header suffixed with a `:` to further modify the score.
+* **Modifiers**: It looks for **modifiers** in the header suffixed with a **`:`** to further modify the score.
+
+* **Defaults**: It looks for a **default** value (with **`?n`**) to use for empty cell
 
 [![example]][example]
 
 Header | What it does
 --|--
-`+Importance` | **Adds** the value of cells of that column to the corresponding **result** column.
-`+Urgency:*10` | Adds 10 **times** the value of that column ... 〃.
-`=Score` | Sets the **result** column.
+<code><strong>+</strong>Importance</code> | **Adds** the value of cells of that column to the corresponding **result** column.
+<code>+Urgency<strong>:*10</strong></code> | Adds 10 **times** the value of that column
+<code>+Effort<strong>?0</strong></code> | Uses **`0`** as the **default** value (if absent/empty)
+<code><strong>=</strong>Score</code> | Sets the **result** column.
 
 [Remark]: https://remark.js.org
 [Remark CLI]: https://github.com/remarkjs/remark/tree/main/packages/remark-cli
