@@ -29,9 +29,9 @@ _.sort = (array, fn, inverse) => {
 
 _.toFixed = (n, d = 2) => Number(Number(n).toFixed(d));
 
-_.startsWith = (text, searchString) => {
-  if (text.startsWith(searchString)) return true;
-  if (text.startsWith('\\' + searchString)) return true;
+_.startsWith = (text = '', searchString = '') => {
+  if (text?.startsWith?.(searchString)) return true;
+  if (text?.startsWith?.('\\' + searchString)) return true;
 };
 
 export default _;

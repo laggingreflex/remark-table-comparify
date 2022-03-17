@@ -6,9 +6,13 @@
   "type": "module",
   "repository": "laggingreflex/remark-table-comparify",
   "dependencies": {
+    "math-expression-evaluator": "^1.3.14",
+    "mdast-util-gfm": "^2.0.0",
+    "mdast-util-to-markdown": "^1.3.0",
     "unist-util-visit": "^4.1.0"
   },
   "peerDependencies": {
+    "remark": "^14.0.2",
     "remark-gfm": "^3.0.1"
   }
 }

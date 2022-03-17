@@ -3,8 +3,11 @@ import remarkGfm from 'remark-gfm';
 import { visit } from 'unist-util-visit';
 import { toMarkdown } from 'mdast-util-to-markdown';
 import { gfmToMarkdown } from 'mdast-util-gfm'
+import MathEval from 'math-expression-evaluator';
 import _ from './utils.js';
+
 const debug = _.debug();
+const evalMath = MathEval.eval.bind(MathEval);
 
 export const defaults = {
   operations: {
@@ -47,7 +50,9 @@ export async function modify(input, opts) {
   const modifications = [];
   await remark().use(remarkGfm).use(opts => (tree, file) => visit(tree, 'table', original => {
     const modified = onTable({ node: original, file });
-    modifications.push(modified);
+    if (modified) {
+      modifications.push(modified);
+    }
   })).process(input);
   const originals = modifications.map(modification =>
     input.substring(
@@ -77,6 +82,7 @@ function onTable({ node, file, state, opts }) {
   for (let i = 0; i < headerRow.children.length; i++) {
     const column = headerRow.children[i];
     const [{ value: header }] = column.children;
+    // console.log(...column.children)
     const meta = getMeta(header, opts);
     if (meta.operation) {
       operationsQueue[meta.operation].push({ i, header, ...meta });
@@ -99,8 +105,11 @@ function onTable({ node, file, state, opts }) {
     let newResult = 0;
     for (const op in operationsQueue) {
       for (const { i, header, modifier, defaultValue } of operationsQueue[op]) {
-        const column = row.children[i]
+        const column = row.children[i];
         let val = column.children?. [0]?.value ?? defaultValue ?? 0;
+        if (val?.match?.(/[\+\-\*\/]+/)) {
+          val = evalMath(val);
+        }
         val = Number(val);
         if (modifier) {
           val = operations[modifier.operation](val, modifier.number);
@@ -126,12 +135,12 @@ function onTable({ node, file, state, opts }) {
   }
 
   const results = rows.map(row => row.children[resultColI].children[0]);
-  const min = Math.min(...results.map(r => r.value)) ?? 1;
+  const min = Math.min(...results.map(r => Math.abs(r.value)).filter(Boolean)) ?? 1;
   const resultHeader = headerRow.children[resultColI].children[0];
   const headerMeta = getMeta(resultHeader.value, { ...opts, min });
   if (headerMeta.modifier) {
     for (const result of results) {
-      result.value = operations[headerMeta.modifier.operation](result.value, headerMeta.modifier.number);
+      result.value = operations[headerMeta.modifier.operation]?.(result.value, headerMeta.modifier.number);
     }
   }
 
@@ -147,7 +156,7 @@ function onTable({ node, file, state, opts }) {
 }
 
 
-function getMeta(string, opts) {
+function getMeta(string = '', opts) {
   const operations = opts?.operations || defaults.operations;
   const operationSymbols = Object.keys(operations);
   const min = opts?.min ?? -Infinity;
@@ -162,7 +171,7 @@ function getMeta(string, opts) {
     }
   }
 
-  if (string.includes(modifierSeparator)) {
+  if (string?.includes?.(modifierSeparator)) {
     let [, modifierString] = string.split(modifierSeparator);
     const opRx = '\\' + operationSymbols.join('|\\');
     const regexpString = `(${opRx})([0-9]+|min)`;
@@ -170,7 +179,11 @@ function getMeta(string, opts) {
     const modifier = meta.modifier = {};
     [, modifier.operation, modifier.number] = modifierString.match(regExp) || [];
     if (modifier.number === 'min') modifier.number = min;
-    modifier.number = Number(modifier.number);
+    if (modifier.number?.match?.(/abs\(([0-9]+|min)\)/)) {
+      const [, num] = modifier.number.match(/abs\(([0-9]+|min)\)/);
+      modifier.number = Math.abs(num);
+    }
+    modifier.number = Number(modifier.number) || 0;
   }
 
   if (string.includes(defaultSeparator)) {
